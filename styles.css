@@ -1,0 +1,116 @@
+/* General reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f9; /* Fallback color */
+  background-image: url('image_1.jpg'); /* Background image */
+  background-size: cover; /* Ensure the image covers the whole background */
+  background-position: center; /* Centers the background image */
+  background-repeat: no-repeat; /* Prevents the image from repeating */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+p {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+#status {
+  font-size: 1.2rem;
+  color: #4CAF50; /* Green for connected status */
+}
+
+#sensorData {
+  font-size: 1.5rem;
+  color: #FF9800; /* Orange for sensor data */
+}
+
+/* Button styling */
+button {
+  font-size: 1.2rem;
+  padding: 12px 30px;
+  background-color: #2196F3; /* Blue button */
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s ease;
+  margin: 10px;
+}
+
+button:hover {
+  background-color: #1976D2; /* Darker blue on hover */
+}
+
+button:active {
+  background-color: #1565C0; /* Even darker blue on click */
+}
+
+button:disabled {
+  background-color: #b0bec5; /* Grey color for disabled button */
+  cursor: not-allowed;
+}
+
+/* Select dropdown styling */
+select {
+  font-size: 1.2rem;
+  padding: 12px 30px;
+  margin: 10px;
+  background-color: #FFFFFF;
+  color: #333;
+  border: 2px solid #2196F3;
+  border-radius: 25px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+select:disabled {
+  cursor: not-allowed;
+  border-color: #b0bec5;
+}
+
+/* Responsive design for mobile and tablets */
+@media (max-width: 600px) {
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  button, select {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+
+  #sensorData {
+    font-size: 1.2rem;
+  }
+}
+
+/* Box shadow and layout styling */
+.container {
+  background-color: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 500px;
+  margin: 0 auto;
+}

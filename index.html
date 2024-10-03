@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control IoT Device via BLE</title>
+  <!-- Link to the external CSS file -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Control IoT Device via BLE</h1>
+
+    <!-- Button to scan for devices -->
+    <button id="connectButton">Scan for Devices</button>
+
+    <!-- Dropdown to select the device -->
+    <select id="deviceSelect" disabled>
+      <option value="">Select a device</option>
+    </select>
+
+    <!-- Button to toggle the LED -->
+    <button id="ledButton" disabled>Toggle LED</button>
+    
+    <p id="status">Status: Disconnected</p>
+    <p>Data received from Device: <span id="sensorData">N/A</span></p>
+  </div>
+
+  <!-- JavaScript to control the device -->
+  <script>
+    let device;
+    let ledCharacteristic;
+    let sensorCharacteristic;
+    let server;
+
+    async function scanForDevices() {
+      try {
+        // Request Bluetooth devices without filtering by service UUIDs
+        const devices = await navigator.bluetooth.requestDevice({
+          acceptAllDevices: true, // Accept any Bluetooth device
+          optionalServices: ['battery_service', 'device_information'] // Common services to add
+        });
+        
+        // Enable the select dropdown
+        const deviceSelect = document.getElementById('deviceSelect');
+        deviceSelect.disabled = false;
+        
+        // Add the found device to the dropdown
+        const newOption = document.createElement('option');
+        newOption.value = devices.id;
+        newOption.innerText = devices.name || 'Unnamed device';
+        deviceSelect.appendChild(newOption);
+
+        // Enable the user to select a device and connect
+        deviceSelect.addEventListener('change', async (event) => {
+          const selectedDeviceId = event.target.value;
+          if (selectedDeviceId) {
+            // Find the device by id and connect
+            device = devices;
+            connectToDevice();
+          }
+        });
+
+        // Update status
+        document.getElementById('status').innerText = 'Scanning for devices...';
+
+      } catch (error) {
+        console.error('Error scanning for devices:', error);
+        document.getElementById('status').innerText = 'Error scanning for devices';
+      }
+    }
+
+    async function connectToDevice() {
+      if (!device) {
+        console.error('No device selected');
+        return;
+      }
+
+      try {
+        server = await device.gatt.connect();
+        
+        // Check if the selected device offers services like battery or device information
+        if (server.getPrimaryService) {
+          const batteryService = await server.getPrimaryService('battery_service');
+          const batteryLevelCharacteristic = await batteryService.getCharacteristic('battery_level');
+          
+          // Read battery level if available
+          const batteryLevel = await batteryLevelCharacteristic.readValue();
+          const batteryPercentage = batteryLevel.getUint8(0);
+          document.getElementById('sensorData').innerText = 'Battery Level: ' + batteryPercentage + '%';
+        }
+
+        document.getElementById('status').innerText = 'Status: Connected to ' + device.name;
+        document.getElementById('status').style.color = '#4CAF50'; // Green when connected
+
+        // Enable the LED button once connected
+        document.getElementById('ledButton').disabled = false;
+
+      } catch (error) {
+        console.error('Error connecting to the BLE device:', error);
+        document.getElementById('status').innerText = 'Connection failed';
+      }
+    }
+
+    async function toggleLed() {
+      if (ledCharacteristic) {
+        const ledValue = new Uint8Array([1]); // Send "1" to turn on the LED (or interact with the device)
+        await ledCharacteristic.writeValue(ledValue);
+      }
+    }
+
+    // Add event listeners for the buttons
+    document.getElementById('connectButton').addEventListener('click', scanForDevices);
+    document.getElementById('ledButton').addEventListener('click', toggleLed);
+  </script>
+</body>
+</html>
